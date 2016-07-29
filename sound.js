@@ -9,7 +9,7 @@ function isRelativePath(path) {
   return !/^\//.test(path);
 }
 
-function Sound(filename, basePath, onError) {
+function Sound(filename, basePath, onError, streamType = Sound.STREAM_MUSIC) {
   var asset = resolveAssetSource(filename);
   if (asset) {
     this._filename = asset.uri;
@@ -29,7 +29,8 @@ function Sound(filename, basePath, onError) {
   this._volume = 1;
   this._pan = 0;
   this._numberOfLoops = 0;
-  RNSound.prepare(this._filename, this._key, (error, props) => {
+  this._streamType = streamType;
+  RNSound.prepare(this._filename, this._key, streamType, (error, props) => {
     if (props) {
       if (typeof props.duration === 'number') {
         this._duration = props.duration;
@@ -101,6 +102,14 @@ Sound.prototype.setVolume = function(value) {
   return this;
 };
 
+Sound.prototype.getStreamVolume = function(stream = Sound.STREAM_MUSIC) {
+  return RNSound.getStreamVolume(stream);
+};
+
+Sound.setStreamVolume = function(stream = Sound.STREAM_MUSIC, volume) {
+  RNSound.setStreamVolume(stream, volume);
+};
+
 Sound.prototype.getPan = function() {
   return this._pan;
 };
@@ -164,5 +173,14 @@ Sound.MAIN_BUNDLE = RNSound.MainBundlePath;
 Sound.DOCUMENT = RNSound.NSDocumentDirectory;
 Sound.LIBRARY = RNSound.NSLibraryDirectory;
 Sound.CACHES = RNSound.NSCachesDirectory;
+
+Sound.STREAM_ALARM = RNSound.STREAM_ALARM;
+Sound.STREAM_DTMF = RNSound.STREAM_DTMF
+Sound.STREAM_MUSIC = RNSound.STREAM_MUSIC;
+Sound.STREAM_NOTIFICATION = RNSound.STREAM_NOTIFICATION;
+Sound.STREAM_RING = RNSound.STREAM_RING
+Sound.STREAM_SYSTEM = RNSound.STREAM_SYSTEM;
+Sound.STREAM_VOICE_CALL = RNSound.STREAM_VOICE_CALL;
+Sound.STREAM_DEFAULT = RNSound.STREAM_DEFAULT;
 
 module.exports = Sound;
